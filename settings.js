@@ -1,0 +1,156 @@
+// Omnisearch Settings v1.1
+
+// Default search engines
+const DEFAULT_ENGINES = [
+  {
+    id: 'google-keep',
+    name: 'Google Keep',
+    url: 'https://keep.google.com/#search/text=${query}',
+    enabled: true
+  },
+  {
+    id: 'google-tasks',
+    name: 'Google Tasks',
+    url: 'https://tasks.google.com/embed/list/~default?query=${query}',
+    enabled: true
+  },
+  {
+    id: 'trello',
+    name: 'Trello',
+    url: 'https://trello.com/search?q=${query}',
+    enabled: true
+  }
+];
+
+let searchEngines = [];
+
+// Load settings on page load
+document.addEventListener('DOMContentLoaded', loadSettings);
+
+async function loadSettings() {
+  try {
+    const result = await chrome.storage.sync.get(['searchEngines']);
+    if (result.searchEngines && result.searchEngines.length > 0) {
+      searchEngines = result.searchEngines;
+    } else {
+      // First time setup - use defaults
+      searchEngines = [...DEFAULT_ENGINES];
+      await saveSettings();
+    }
+    renderEngines();
+  } catch (error) {
+    console.error('Error loading settings:', error);
+    searchEngines = [...DEFAULT_ENGINES];
+    renderEngines();
+  }
+}
+
+function renderEngines() {
+  const container = document.getElementById('searchEngines');
+  container.innerHTML = '';
+  
+  searchEngines.forEach((engine, index) => {
+    const engineDiv = document.createElement('div');
+    engineDiv.className = `search-engine ${engine.enabled ? '' : 'disabled'}`;
+    
+    engineDiv.innerHTML = `
+      <div class="engine-header">
+        <input type="checkbox" class="engine-checkbox" ${engine.enabled ? 'checked' : ''} 
+               onchange="toggleEngine(${index})">
+        <input type="text" class="engine-name" value="${engine.name}" 
+               onchange="updateEngineName(${index}, this.value)">
+        <button class="delete-btn" onclick="deleteEngine(${index})">Delete</button>
+      </div>
+      <input type="text" class="engine-url" value="${engine.url}" 
+             onchange="updateEngineUrl(${index}, this.value)"
+             placeholder="https://example.com/search?q=\${query}">
+      <div class="help-text">Use \${query} as placeholder for search term</div>
+    `;
+    
+    container.appendChild(engineDiv);
+  });
+}
+
+function toggleEngine(index) {
+  searchEngines[index].enabled = !searchEngines[index].enabled;
+  renderEngines();
+}
+
+function updateEngineName(index, name) {
+  searchEngines[index].name = name.trim();
+}
+
+function updateEngineUrl(index, url) {
+  searchEngines[index].url = url.trim();
+}
+
+function deleteEngine(index) {
+  if (confirm(`Delete "${searchEngines[index].name}"?`)) {
+    searchEngines.splice(index, 1);
+    renderEngines();
+  }
+}
+
+function addEngine() {
+  const nameInput = document.getElementById('newEngineName');
+  const urlInput = document.getElementById('newEngineUrl');
+  
+  const name = nameInput.value.trim();
+  const url = urlInput.value.trim();
+  
+  if (!name || !url) {
+    alert('Please enter both name and URL');
+    return;
+  }
+  
+  if (!url.includes('${query}')) {
+    alert('URL must contain ${query} placeholder');
+    return;
+  }
+  
+  const newEngine = {
+    id: 'custom-' + Date.now(),
+    name: name,
+    url: url,
+    enabled: true
+  };
+  
+  searchEngines.push(newEngine);
+  renderEngines();
+  
+  // Clear inputs
+  nameInput.value = '';
+  urlInput.value = '';
+}
+
+async function saveSettings() {
+  try {
+    await chrome.storage.sync.set({ searchEngines: searchEngines });
+    
+    // Show success feedback
+    const saveBtn = document.getElementById('saveBtn');
+    const originalText = saveBtn.textContent;
+    saveBtn.textContent = 'Saved!';
+    saveBtn.style.background = '#28a745';
+    
+    setTimeout(() => {
+      saveBtn.textContent = originalText;
+      saveBtn.style.background = '#28a745';
+    }, 2000);
+    
+  } catch (error) {
+    console.error('Error saving settings:', error);
+    alert('Error saving settings. Please try again.');
+  }
+}
+
+// Event listeners
+document.getElementById('addEngineBtn').addEventListener('click', addEngine);
+document.getElementById('saveBtn').addEventListener('click', saveSettings);
+
+// Allow Enter key to add engine
+document.getElementById('newEngineUrl').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    addEngine();
+  }
+}); 
