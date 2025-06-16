@@ -1,4 +1,4 @@
-<!-- Omnisearch v1.1 -->
+<!-- Omnisearch v1.2 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,7 +8,7 @@
     body { 
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
       margin: 16px; 
-      min-width: 280px; 
+      min-width: 320px; 
       background: #f8f9fa;
     }
     .header {
@@ -68,11 +68,63 @@
       background: #ccc;
       cursor: not-allowed;
     }
+    .engines-section {
+      margin: 16px 0;
+      padding: 12px;
+      background: white;
+      border-radius: 6px;
+      border: 1px solid #e0e0e0;
+    }
+    .engines-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #333;
+    }
+    .toggle-all {
+      font-size: 12px;
+      color: #1a73e8;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .toggle-all:hover {
+      color: #1557b0;
+    }
+    .engine-item {
+      display: flex;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .engine-item:last-child {
+      border-bottom: none;
+    }
+    .engine-checkbox {
+      margin-right: 8px;
+      cursor: pointer;
+    }
+    .engine-name {
+      flex: 1;
+      font-size: 13px;
+      color: #333;
+    }
+    .engine-item.disabled .engine-name {
+      color: #999;
+    }
     .engine-count {
       font-size: 12px;
       color: #666;
       text-align: center;
       margin-top: 8px;
+    }
+    .no-engines {
+      text-align: center;
+      color: #999;
+      font-size: 13px;
+      padding: 12px;
     }
   </style>
 </head>
@@ -82,6 +134,17 @@
     <button class="settings-btn" id="settingsBtn" title="Settings">⚙️</button>
   </div>
   <input type="text" id="searchInput" placeholder="Enter your search term..." autofocus />
+  
+  <div class="engines-section">
+    <div class="engines-header">
+      <span>Search Engines</span>
+      <span class="toggle-all" id="toggleAll">Toggle All</span>
+    </div>
+    <div id="enginesList">
+      <div class="no-engines">Loading engines...</div>
+    </div>
+  </div>
+  
   <button id="searchBtn">Search All Platforms</button>
   <div class="engine-count" id="engineCount">Loading engines...</div>
   <script src="popup.js"></script>

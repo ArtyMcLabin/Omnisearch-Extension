@@ -1,8 +1,10 @@
-// Omnisearch v1.1
+// Omnisearch v1.2
 const input = document.getElementById('searchInput');
 const btn = document.getElementById('searchBtn');
 const settingsBtn = document.getElementById('settingsBtn');
 const engineCount = document.getElementById('engineCount');
+const enginesList = document.getElementById('enginesList');
+const toggleAll = document.getElementById('toggleAll');
 
 // Default search engines (fallback)
 const DEFAULT_ENGINES = [
@@ -41,12 +43,17 @@ async function loadSearchEngines() {
       searchEngines = [...DEFAULT_ENGINES];
       await chrome.storage.sync.set({ searchEngines: searchEngines });
     }
-    updateEngineCount();
+    updateUI();
   } catch (error) {
     console.error('Error loading search engines:', error);
     searchEngines = [...DEFAULT_ENGINES];
-    updateEngineCount();
+    updateUI();
   }
+}
+
+function updateUI() {
+  updateEngineCount();
+  renderEnginesList();
 }
 
 function updateEngineCount() {
@@ -63,20 +70,78 @@ function updateEngineCount() {
   }
 }
 
+function renderEnginesList() {
+  if (searchEngines.length === 0) {
+    enginesList.innerHTML = '<div class="no-engines">No search engines configured</div>';
+    return;
+  }
+  
+  enginesList.innerHTML = '';
+  
+  searchEngines.forEach((engine, index) => {
+    const engineItem = document.createElement('div');
+    engineItem.className = `engine-item ${engine.enabled ? '' : 'disabled'}`;
+    
+    engineItem.innerHTML = `
+      <input type="checkbox" class="engine-checkbox" ${engine.enabled ? 'checked' : ''} 
+             onchange="toggleEngineInPopup(${index})">
+      <span class="engine-name">${engine.name}</span>
+    `;
+    
+    enginesList.appendChild(engineItem);
+  });
+}
+
+async function toggleEngineInPopup(index) {
+  searchEngines[index].enabled = !searchEngines[index].enabled;
+  
+  // Save to storage
+  try {
+    await chrome.storage.sync.set({ searchEngines: searchEngines });
+    updateUI();
+  } catch (error) {
+    console.error('Error saving engine state:', error);
+    // Revert the change if save failed
+    searchEngines[index].enabled = !searchEngines[index].enabled;
+    updateUI();
+  }
+}
+
+function toggleAllEngines() {
+  const enabledCount = searchEngines.filter(engine => engine.enabled).length;
+  const shouldEnableAll = enabledCount < searchEngines.length;
+  
+  searchEngines.forEach(engine => {
+    engine.enabled = shouldEnableAll;
+  });
+  
+  // Save to storage
+  chrome.storage.sync.set({ searchEngines: searchEngines }).then(() => {
+    updateUI();
+  }).catch(error => {
+    console.error('Error saving engines state:', error);
+  });
+}
+
+function processUrl(url, query) {
+  // Support both ${query} and %s placeholders (like Chrome custom search engines)
+  return url.replace(/\$\{query\}/g, query).replace(/%s/g, query);
+}
+
 async function doOmniSearch() {
   const q = input.value.trim();
   if (!q) return;
   
   const enabledEngines = searchEngines.filter(engine => engine.enabled);
   if (enabledEngines.length === 0) {
-    alert('No search engines enabled. Please configure in settings.');
+    alert('No search engines enabled. Please enable at least one search engine.');
     return;
   }
   
   const query = encodeURIComponent(q);
   
   for (const engine of enabledEngines) {
-    const url = engine.url.replace('${query}', query);
+    const url = processUrl(engine.url, query);
     chrome.tabs.create({ url });
   }
   
@@ -91,6 +156,7 @@ function openSettings() {
 // Event listeners
 btn.addEventListener('click', doOmniSearch);
 settingsBtn.addEventListener('click', openSettings);
+toggleAll.addEventListener('click', toggleAllEngines);
 
 input.addEventListener('keydown', function(e) {
   if (e.key === 'Enter') {

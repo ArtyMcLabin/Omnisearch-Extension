@@ -1,4 +1,4 @@
-// Omnisearch Settings v1.1
+// Omnisearch Settings v1.2
 
 // Default search engines
 const DEFAULT_ENGINES = [
@@ -63,8 +63,8 @@ function renderEngines() {
       </div>
       <input type="text" class="engine-url" value="${engine.url}" 
              onchange="updateEngineUrl(${index}, this.value)"
-             placeholder="https://example.com/search?q=\${query}">
-      <div class="help-text">Use \${query} as placeholder for search term</div>
+             placeholder="https://example.com/search?q=\${query} or https://example.com/search?q=%s">
+      <div class="help-text">Use \${query} or %s as placeholder for search term (like Chrome custom search engines)</div>
     `;
     
     container.appendChild(engineDiv);
@@ -103,8 +103,8 @@ function addEngine() {
     return;
   }
   
-  if (!url.includes('${query}')) {
-    alert('URL must contain ${query} placeholder');
+  if (!url.includes('${query}') && !url.includes('%s')) {
+    alert('URL must contain ${query} or %s placeholder for the search term');
     return;
   }
   

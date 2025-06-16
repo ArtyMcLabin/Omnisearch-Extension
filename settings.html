@@ -118,7 +118,7 @@
 <body>
   <div class="container">
     <h1>🔍 Omnisearch Settings</h1>
-    <p>Configure your search engines. Use <code>${query}</code> as placeholder for the search term.</p>
+    <p>Configure your search engines. Use <code>${query}</code> or <code>%s</code> as placeholder for the search term (like Chrome custom search engines).</p>
     
     <div id="searchEngines"></div>
     
@@ -130,8 +130,8 @@
       </div>
       <div class="input-group">
         <label>URL Template:</label>
-        <input type="text" id="newEngineUrl" placeholder="e.g., https://github.com/search?q=${query}">
-        <div class="help-text">Use ${query} where the search term should be inserted</div>
+        <input type="text" id="newEngineUrl" placeholder="e.g., https://github.com/search?q=${query} or https://github.com/search?q=%s">
+        <div class="help-text">Use ${query} or %s where the search term should be inserted (both formats supported like Chrome)</div>
       </div>
       <button class="add-btn" id="addEngineBtn">Add Search Engine</button>
     </div>
