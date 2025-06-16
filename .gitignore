@@ -6,6 +6,7 @@ Thumbs.db
 *.crx
 *.pem
 *.zip
+omnisearch-extension*.zip
 store-package/
 
 # Local settings (if we ever add file-based storage)
