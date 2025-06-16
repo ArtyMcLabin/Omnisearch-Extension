@@ -1,4 +1,4 @@
-// Omnisearch v1.2
+// Omnisearch v1.2.1
 const input = document.getElementById('searchInput');
 const btn = document.getElementById('searchBtn');
 const settingsBtn = document.getElementById('settingsBtn');
@@ -84,11 +84,23 @@ function renderEnginesList() {
     
     engineItem.innerHTML = `
       <input type="checkbox" class="engine-checkbox" ${engine.enabled ? 'checked' : ''} 
-             onchange="toggleEngineInPopup(${index})">
+             data-index="${index}">
       <span class="engine-name">${engine.name}</span>
     `;
     
     enginesList.appendChild(engineItem);
+  });
+  
+  // Add event listeners for checkboxes
+  addEngineCheckboxListeners();
+}
+
+function addEngineCheckboxListeners() {
+  document.querySelectorAll('.engine-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+      const index = parseInt(this.dataset.index);
+      toggleEngineInPopup(index);
+    });
   });
 }
 

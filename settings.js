@@ -1,4 +1,4 @@
-// Omnisearch Settings v1.2
+// Omnisearch Settings v1.2.1
 
 // Default search engines
 const DEFAULT_ENGINES = [
@@ -52,22 +52,60 @@ function renderEngines() {
   searchEngines.forEach((engine, index) => {
     const engineDiv = document.createElement('div');
     engineDiv.className = `search-engine ${engine.enabled ? '' : 'disabled'}`;
+    engineDiv.dataset.index = index;
     
     engineDiv.innerHTML = `
       <div class="engine-header">
         <input type="checkbox" class="engine-checkbox" ${engine.enabled ? 'checked' : ''} 
-               onchange="toggleEngine(${index})">
+               data-index="${index}">
         <input type="text" class="engine-name" value="${engine.name}" 
-               onchange="updateEngineName(${index}, this.value)">
-        <button class="delete-btn" onclick="deleteEngine(${index})">Delete</button>
+               data-index="${index}">
+        <button class="delete-btn" data-index="${index}">Delete</button>
       </div>
       <input type="text" class="engine-url" value="${engine.url}" 
-             onchange="updateEngineUrl(${index}, this.value)"
+             data-index="${index}"
              placeholder="https://example.com/search?q=\${query} or https://example.com/search?q=%s">
       <div class="help-text">Use \${query} or %s as placeholder for search term (like Chrome custom search engines)</div>
     `;
     
     container.appendChild(engineDiv);
+  });
+  
+  // Add event listeners for the newly created elements
+  addEngineEventListeners();
+}
+
+function addEngineEventListeners() {
+  // Checkbox event listeners
+  document.querySelectorAll('.engine-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+      const index = parseInt(this.dataset.index);
+      toggleEngine(index);
+    });
+  });
+  
+  // Engine name input event listeners
+  document.querySelectorAll('.engine-name').forEach(input => {
+    input.addEventListener('change', function() {
+      const index = parseInt(this.dataset.index);
+      updateEngineName(index, this.value);
+    });
+  });
+  
+  // Engine URL input event listeners
+  document.querySelectorAll('.engine-url').forEach(input => {
+    input.addEventListener('change', function() {
+      const index = parseInt(this.dataset.index);
+      updateEngineUrl(index, this.value);
+    });
+  });
+  
+  // Delete button event listeners
+  document.querySelectorAll('.delete-btn').forEach(button => {
+    button.addEventListener('click', function() {
+      const index = parseInt(this.dataset.index);
+      deleteEngine(index);
+    });
   });
 }
 
