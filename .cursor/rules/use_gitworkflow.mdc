@@ -1,0 +1,31 @@
+---
+description: anything git related
+globs:
+alwaysApply: false
+---
+This project uses GitWorkflow for all git operations.
+
+1) Git Operations:
+  - ALWAYS use `.git_workflow/git_workflow.ps1` for ANY git operations
+  - NEVER use raw git commands unless explicitly approved by human
+  - If operation not supported by GitWorkflow:
+	a) STOP - do not use raw git commands
+	b) Report to user: "Human, operation X is not defined in GitWorkflow. Should we add it officially?"
+	c) Only proceed with raw git if explicitly approved
+
+2) Repository Operations:
+  - Check for updates before operations: `.git_workflow/git_workflow.ps1`
+  - Follow security warnings if shown
+  - Use standard commit message format
+  - Always include issue references if applicable
+
+3) Issue Management:
+  - Use GitWorkflow's issue creation system
+  - Follow standard labeling conventions
+  - Use proper issue templates
+  - Link commits to issues when resolving
+
+4) Security:
+  - Review security warnings during updates
+  - Never bypass security checks without user approval
+  - Report suspicious changes to repository owner
