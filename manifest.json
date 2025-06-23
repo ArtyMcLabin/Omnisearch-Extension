@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Omnisearch",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Search multiple platforms at once with a single query.",
   "action": {
     "default_popup": "popup.html",
@@ -12,7 +12,7 @@
       "128": "icon-128.png"
     }
   },
-  "permissions": ["tabs", "storage"],
+  "permissions": ["storage"],
   "icons": {
     "16": "icon-16.png",
     "32": "icon-32.png",

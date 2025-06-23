@@ -1,12 +1,17 @@
-# Omnisearch Extension Packaging Script v1.0
+# Omnisearch Extension Packaging Script v1.1
 # This script creates a clean ZIP file for Chrome Web Store submission
 
 Write-Host "🔍 Omnisearch Extension - Chrome Store Packaging" -ForegroundColor Blue
 Write-Host "=================================================" -ForegroundColor Blue
 
+# Read version from manifest.json
+$manifestContent = Get-Content "manifest.json" -Raw | ConvertFrom-Json
+$version = $manifestContent.version
+Write-Host "📋 Detected version: $version" -ForegroundColor Cyan
+
 # Create output directory
 $outputDir = ".\store-package"
-$zipName = "omnisearch-extension-v1.2.1.zip"
+$zipName = "omnisearch-extension-v$version.zip"
 
 if (Test-Path $outputDir) {
     Remove-Item $outputDir -Recurse -Force
