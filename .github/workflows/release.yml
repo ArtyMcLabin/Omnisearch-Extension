@@ -1,0 +1,67 @@
+name: Release Extension
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on version tags like v1.2.4
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Create extension package
+      run: |
+        # Create build directory
+        mkdir -p build
+        
+        # Copy extension files
+        cp manifest.json build/
+        cp popup.html build/
+        cp popup.js build/
+        cp settings.html build/
+        cp settings.js build/
+        cp icon-*.png build/
+        
+        # Create zip package
+        cd build
+        zip -r ../extension.zip *
+        cd ..
+        
+    - name: Upload & Publish to Chrome Web Store
+      uses: mobilefirstllc/cws-publish@latest
+      with:
+        action: 'publish'  # upload, publish, or testers
+        client_id: ${{ secrets.CHROME_CLIENT_ID }}
+        client_secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+        refresh_token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+        extension_id: ${{ secrets.CHROME_EXTENSION_ID }}
+        zip_file: 'extension.zip'
+        
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+        
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./extension.zip
+        asset_name: omnisearch-extension-${{ github.ref_name }}.zip
+        asset_content_type: application/zip 
