@@ -56,18 +56,10 @@ This project uses standard web technologies:
 Package the extension for distribution:
 
 ```bash
-# Local packaging
 python package.py
-
-# Or directly
-python scripts/package.py
 ```
 
-### Automated Publishing
-This project uses GitHub Actions for automated Chrome Web Store publishing:
-- **Contributors**: Packaging works for everyone, publishing is skipped
-- **Maintainers**: Set up API credentials following [CHROME_WEB_STORE_SETUP.md](CHROME_WEB_STORE_SETUP.md)
-- **Google Cloud Shell**: Use [GOOGLE_CLOUD_SHELL_SETUP.md](GOOGLE_CLOUD_SHELL_SETUP.md) for browser-based setup
+This creates a ZIP file ready for manual upload to the Chrome Web Store.
 
 ## Contributing
 1. Fork the repository

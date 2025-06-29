@@ -1,29 +1,61 @@
 #!/usr/bin/env python3
 """
-Omnisearch Extension Packaging Script v2.0
-Cross-platform Python packaging for Chrome Web Store
+Omnisearch Extension Packaging Script
+Creates a ZIP file for Chrome Web Store submission
 """
 
+import json
+import shutil
+import zipfile
 import sys
-import subprocess
 from pathlib import Path
 
 def main():
-    # Run the actual packaging script
-    script_path = Path("scripts") / "package.py"
+    print("🔍 Omnisearch Extension - Chrome Store Packaging")
+    print("=================================================")
     
-    if not script_path.exists():
-        print("❌ Packaging script not found at scripts/package.py")
-        sys.exit(1)
-    
+    # Read version from manifest.json
     try:
-        result = subprocess.run([sys.executable, str(script_path)], check=True)
-        sys.exit(result.returncode)
-    except subprocess.CalledProcessError as e:
-        sys.exit(e.returncode)
-    except KeyboardInterrupt:
-        print("\n❌ Packaging cancelled by user")
+        with open("manifest.json", "r") as f:
+            manifest = json.load(f)
+        version = manifest["version"]
+        print(f"📋 Version: {version}")
+    except (FileNotFoundError, KeyError, json.JSONDecodeError) as e:
+        print(f"❌ Error reading manifest.json: {e}")
         sys.exit(1)
+    
+    # Files to include
+    files = [
+        "manifest.json",
+        "popup.html", 
+        "popup.js",
+        "settings.html",
+        "settings.js",
+        "icon-16.png",
+        "icon-32.png",
+        "icon-48.png", 
+        "icon-128.png"
+    ]
+    
+    # Create ZIP
+    zip_name = f"omnisearch-extension-v{version}.zip"
+    
+    print(f"\n📦 Creating {zip_name}...")
+    
+    with zipfile.ZipFile(zip_name, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        for file_name in files:
+            if Path(file_name).exists():
+                zipf.write(file_name)
+                print(f"  ✓ {file_name}")
+            else:
+                print(f"  ✗ {file_name} (not found)")
+    
+    # Show result
+    zip_size = Path(zip_name).stat().st_size
+    zip_size_kb = round(zip_size / 1024, 2)
+    
+    print(f"\n✅ Created {zip_name} ({zip_size_kb} KB)")
+    print(f"\n📋 Next: Upload to https://chrome.google.com/webstore/devconsole/")
 
 if __name__ == "__main__":
     main() 
