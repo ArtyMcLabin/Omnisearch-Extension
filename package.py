@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Omnisearch Extension Packaging Script
-Simple wrapper to run the packaging script
+Omnisearch Extension Packaging Script v2.0
+Cross-platform Python packaging for Chrome Web Store
 """
 
 import sys

@@ -11,7 +11,22 @@ This guide will help you set up automated publishing to Chrome Web Store using G
 
 **For Maintainers**: Follow the full setup below to enable automated publishing.
 
-## Step 1: Get Chrome Web Store API Credentials
+## 🚀 Quick Start Options
+
+Choose your preferred setup method:
+
+### Option A: Google Cloud Shell (Recommended)
+- ✅ **No local setup required**
+- ✅ **Pre-installed tools** 
+- ✅ **Browser-based**
+- ✅ **Free**
+
+👉 **Follow the [Google Cloud Shell Setup Guide](GOOGLE_CLOUD_SHELL_SETUP.md)**
+
+### Option B: Local Setup (Manual)
+Continue with the steps below for local setup.
+
+## Step 1: Get Chrome Web Store API Credentials (Local Setup)
 
 ### 1.1 Create Google Cloud Project
 1. Go to https://console.cloud.google.com/
