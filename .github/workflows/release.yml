@@ -13,30 +13,22 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
+    - name: Setup Python
+      uses: actions/setup-python@v4
       with:
-        node-version: '18'
+        python-version: '3.11'
         
     - name: Create extension package
-      run: |
-        # Create build directory
-        mkdir -p build
-        
-        # Copy extension files
-        cp manifest.json build/
-        cp popup.html build/
-        cp popup.js build/
-        cp settings.html build/
-        cp settings.js build/
-        cp icon-*.png build/
-        
-        # Create zip package
-        cd build
-        zip -r ../extension.zip *
-        cd ..
+      run: python scripts/package.py
         
     - name: Upload & Publish to Chrome Web Store
+      # Only run if all required secrets are available (for maintainer's fork)
+      if: env.CHROME_CLIENT_ID != '' && env.CHROME_CLIENT_SECRET != '' && env.CHROME_REFRESH_TOKEN != '' && env.CHROME_EXTENSION_ID != ''
+      env:
+        CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
+        CHROME_CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
+        CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
+        CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
       uses: mobilefirstllc/cws-publish@latest
       with:
         action: 'publish'  # upload, publish, or testers
@@ -44,7 +36,7 @@ jobs:
         client_secret: ${{ secrets.CHROME_CLIENT_SECRET }}
         refresh_token: ${{ secrets.CHROME_REFRESH_TOKEN }}
         extension_id: ${{ secrets.CHROME_EXTENSION_ID }}
-        zip_file: 'extension.zip'
+        zip_file: 'omnisearch-extension-v*.zip'
         
     - name: Create GitHub Release
       uses: actions/create-release@v1

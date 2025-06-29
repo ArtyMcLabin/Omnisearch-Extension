@@ -1,8 +1,35 @@
-# Omnisearch Extension Packaging Script v1.1
-# This script creates a clean ZIP file for Chrome Web Store submission
+# Omnisearch Extension Packaging Script v1.2
+# This script now calls the Python packaging script for consistency
 
 Write-Host "🔍 Omnisearch Extension - Chrome Store Packaging" -ForegroundColor Blue
 Write-Host "=================================================" -ForegroundColor Blue
+Write-Host "📋 Using Python packaging script for consistency..." -ForegroundColor Cyan
+
+# Check if Python is available
+try {
+    $pythonVersion = python --version 2>$null
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "✓ Python detected: $pythonVersion" -ForegroundColor Green
+        Write-Host "`n🚀 Running Python packaging script..." -ForegroundColor Yellow
+        python scripts/package.py
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "`n✅ Packaging completed successfully!" -ForegroundColor Green
+            exit 0
+        } else {
+            Write-Host "`n❌ Python packaging failed!" -ForegroundColor Red
+            exit 1
+        }
+    } else {
+        throw "Python not found"
+    }
+} catch {
+    Write-Host "⚠️  Python not available, falling back to PowerShell implementation..." -ForegroundColor Yellow
+    Write-Host "💡 For best results, install Python 3.11+ and use the Python script" -ForegroundColor Cyan
+    Start-Sleep -Seconds 2
+}
+
+# Fallback PowerShell implementation
+Write-Host "`n📦 Using PowerShell fallback implementation..." -ForegroundColor Yellow
 
 # Read version from manifest.json
 $manifestContent = Get-Content "manifest.json" -Raw | ConvertFrom-Json
@@ -21,7 +48,7 @@ if (Test-Path $outputDir) {
 New-Item -ItemType Directory -Path $outputDir | Out-Null
 Write-Host "✓ Created package directory" -ForegroundColor Green
 
-# Files to include in the extension package
+# Files to include in the extension package (updated to match Python script)
 $filesToInclude = @(
     "manifest.json",
     "popup.html",
@@ -31,9 +58,7 @@ $filesToInclude = @(
     "icon-16.png",
     "icon-32.png", 
     "icon-48.png",
-    "icon-128.png",
-    "icon.png",
-    "icon.svg"
+    "icon-128.png"
 )
 
 # Copy files to package directory
@@ -76,13 +101,6 @@ Write-Host "`n🚀 Package Ready for Chrome Web Store!" -ForegroundColor Blue
 Write-Host "=======================================" -ForegroundColor Blue
 Write-Host "📁 Package file: $zipName" -ForegroundColor White
 Write-Host "📏 Size: $zipSizeKB KB" -ForegroundColor White
-Write-Host "`n📋 Next Steps:" -ForegroundColor Yellow
-Write-Host "1. Go to: https://chrome.google.com/webstore/devconsole/" -ForegroundColor White
-Write-Host "2. Click 'New Item'" -ForegroundColor White
-Write-Host "3. Upload: $zipName" -ForegroundColor White
-Write-Host "4. Fill out store listing details" -ForegroundColor White
-Write-Host "5. Submit for review" -ForegroundColor White
-Write-Host "`n📖 See CHROME_STORE_GUIDE.md for detailed instructions" -ForegroundColor Cyan
 
 # Verify package contents
 Write-Host "`n🔍 Package Contents Verification:" -ForegroundColor Yellow

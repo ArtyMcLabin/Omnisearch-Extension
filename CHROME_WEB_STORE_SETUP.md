@@ -2,6 +2,15 @@
 
 This guide will help you set up automated publishing to Chrome Web Store using GitHub Actions.
 
+## 🔐 Open Source Project Considerations
+
+**For Contributors**: This project is open source, so the automated publishing only works for the maintainer's repository with the required secrets. When you fork this project:
+- The packaging script (`scripts/package.py`) will work for everyone
+- The Chrome Web Store publishing step will be skipped (no secrets available)
+- You can still create manual releases using the generated ZIP file
+
+**For Maintainers**: Follow the full setup below to enable automated publishing.
+
 ## Step 1: Get Chrome Web Store API Credentials
 
 ### 1.1 Create Google Cloud Project
